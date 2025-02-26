@@ -1,0 +1,12 @@
+# Visual Studio spezifische Dateien
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.ilk
+*.log
+*.pdb
+*.tlog
+*.VC.db
