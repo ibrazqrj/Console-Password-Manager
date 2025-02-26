@@ -28,7 +28,7 @@ namespace PasswordManager
             File.AppendAllText(filePath, inputWebsite + " | " + inputUsername + " | " + inputPassword + Environment.NewLine);
         }
 
-        public void listPasswords()
+        public void listPasswords(byte[] aesKey)
         {
             var validPasswords = new List<string>();
             var partCount = 1;
@@ -41,7 +41,8 @@ namespace PasswordManager
                     var parts = savedpws.Split("|");
                     if (parts.Length == 3)
                     {
-                        Console.WriteLine($"{partCount} | Website / URL : {parts[0],-30} | Username / E-Mail: {parts[1],-30} | Password: {parts[2],-30}");
+                        string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2], aesKey);
+                        Console.WriteLine($"{partCount} | Website / URL : {parts[0],-30} | Username / E-Mail: {parts[1],-30} | Password: {decryptedPassword,-30}");
                         validPasswords.Add(savedpws);
                         partCount++;
                     }
