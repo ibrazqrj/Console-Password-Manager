@@ -59,6 +59,10 @@ namespace PasswordManager
                 aesAlg.Key = aesKey;
 
                 byte[] fullCipher = Convert.FromBase64String(encryptedText);
+                if (fullCipher.Length < aesAlg.BlockSize / 8)
+                {
+                    throw new ArgumentException("Ciphertext is too short or invalid.");
+                }
                 byte[] iv = new byte[aesAlg.BlockSize / 8];
                 byte[] cipherText = new byte[fullCipher.Length - iv.Length];
 

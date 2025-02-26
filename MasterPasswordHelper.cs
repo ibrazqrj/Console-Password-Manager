@@ -10,9 +10,20 @@ namespace PasswordManager
 {
     class MasterPasswordHelper
     {
-        public string filePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "master.txt");
+        public string filePath { get; private set; }
+
+        public MasterPasswordHelper()
+        {
+            string folderPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "PMiz");
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            filePath = Path.Combine(folderPath, "master.txt");
+        }
 
         public void HashPassword()
         {
@@ -26,11 +37,22 @@ namespace PasswordManager
             {
 
                 Console.Clear();
+                int emptyFields = 12;
 
+                for (int i = 0; i <= emptyFields; i++)
+                {
+                    PrintCentered.PrintTextCentered(" ");
+                }
                 PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.PASSWORD MANAGER.-~*´¨¯¨`*·~-.¸··._.·´¯)");
                 PrintCentered.PrintTextCentered("To use the Password manager, you need to create a master password. Don't worry, your master password will get hashed and can't be unhashed anymore.");
                 PrintCentered.PrintTextCentered("");
-                PrintCentered.PrintTextCentered("Enter your master password:");
+                string prompt = "Enter your master password:";
+                int screenWidth = Console.WindowWidth;
+                int textWidth = prompt.Length;
+                int leftPadding = (screenWidth - textWidth) / 2 ;
+
+                Console.SetCursorPosition(leftPadding, Console.CursorTop);
+                Console.Write(prompt);
 
                 string masterpassword = Console.ReadLine();
                 if(string.IsNullOrWhiteSpace(masterpassword))
@@ -59,6 +81,8 @@ namespace PasswordManager
 
         public void VerifyMasterPassword(string inputPassword)
         {
+            int emptyFields = 12;
+
             Console.Clear();
 
             if (string.IsNullOrWhiteSpace(inputPassword))
@@ -97,8 +121,13 @@ namespace PasswordManager
 
                 if(hashCombinedSalt != storedHashCombinedSalt)
                 {
+                    for (int i = 0; i <= emptyFields; i++)
+                    {
+                        PrintCentered.PrintTextCentered(" ");
+                    }
                     PrintCentered.PrintTextCentered("Master password is wrong!");
                     Environment.Exit(0);
+                    Console.Clear();
                 }
                 Console.Clear();
             }

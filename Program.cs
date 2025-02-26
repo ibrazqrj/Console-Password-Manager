@@ -30,6 +30,7 @@ namespace PasswordManager
                 {
                     PrintCentered.PrintTextCentered(" ");
                 }
+
                 PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.PASSWORDMANAGER.-~*´¨¯¨`*·~-.¸··._.·´¯)");
                 PrintMainMenu();
                 PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-..-~*´¨¯¯¨`*·~-..-~*´¨¯¨`*·~-.¸··._.·´¯)");
@@ -61,7 +62,7 @@ namespace PasswordManager
                         GeneratePassword(manager);
                         break;
                     case "5":
-                        SearchPassword(manager);
+                        SearchPassword(manager, aesKey);
                         break;
                     case "6":
                         RenewMasterPassword(passwordHelper);
@@ -97,7 +98,7 @@ namespace PasswordManager
                 "'.________________.'"
             };
 
-            string dev = "@ibrazqrj";
+            string dev = " @ibrazqrj";
 
             // Logo und Entwicklername zentrieren
             foreach (string line in logo)
@@ -157,7 +158,6 @@ namespace PasswordManager
                     pass += key.KeyChar;
                 }
 
-                // Get cursor position
                 int startX = (consoleWidth / 2) - (pass.Length / 2);
                 int startY = Console.CursorTop;
 
@@ -172,7 +172,6 @@ namespace PasswordManager
         }
 
 
-        // Hauptmenü anzeigen
         static void PrintMainMenu()
         {
             PrintCentered.PrintTextCentered(" ");
@@ -181,48 +180,45 @@ namespace PasswordManager
             PrintCentered.PrintTextCentered("3 | Delete password       ");
             PrintCentered.PrintTextCentered("4 | Random password       ");
             PrintCentered.PrintTextCentered("5 | Search password       ");
-            PrintCentered.PrintTextCentered("6 | Change Master Password");
+            PrintCentered.PrintTextCentered("6 | Change master password");
             PrintCentered.PrintTextCentered("7 | Quit                  ");
             PrintCentered.PrintTextCentered(" ");
         }
 
-        // Passwort hinzufügen
         static void AddPassword(PasswordManagerOptions manager, byte[] aesKey)
         {
             Console.Clear();
             PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.CREATE ENTRY.-~*´¨¯¨`*·~-.¸··._.·´¯)");
-            PrintCentered.PrintTextCentered("Please fill all fields to save your password! If ");
+            PrintCentered.PrintTextCentered("Please fill all fields to save your password!");
             PrintCentered.PrintTextCentered(" ");
 
-            // Benutzereingaben
-            PrintCentered.PrintTextCentered("Webpage / URL:");
-            string inputWebsite = Console.ReadLine();
+            string inputWebsite = CenteredInput("Webpage / URL:");
             if (string.IsNullOrEmpty(inputWebsite))
             {
                 PrintCentered.PrintTextCentered("This field can't be empty!");
                 return;
             }
+            PrintCentered.PrintTextCentered(" ");
 
-            PrintCentered.PrintTextCentered("Username / E-Mail:");
-            string inputUsername = Console.ReadLine();
+            string inputUsername = CenteredInput("Username / E-Mail:");
             if (string.IsNullOrEmpty(inputUsername))
             {
                 PrintCentered.PrintTextCentered("This field can't be empty!");
                 return;
             }
+            PrintCentered.PrintTextCentered(" ");
 
-            PrintCentered.PrintTextCentered("Password:");
-            string inputPassword = Console.ReadLine();
+            string inputPassword = CenteredInput("Password:");
             if (string.IsNullOrEmpty(inputPassword))
             {
                 PrintCentered.PrintTextCentered("This field can't be empty!");
                 return;
             }
-
+            PrintCentered.PrintTextCentered(" ");
+            string encryptedUsername = AesEncryptionHelper.EncryptPassword(inputUsername, aesKey);
             string encryptedPassword = AesEncryptionHelper.EncryptPassword(inputPassword, aesKey);
 
-            // Passwort speichern
-            manager.AddPassword(inputWebsite, inputUsername, encryptedPassword);
+            manager.AddPassword(inputWebsite, encryptedUsername, encryptedPassword);
 
             PrintCentered.PrintTextCentered(" ");
             PrintCentered.PrintTextCentered("Entry successfully added!");
@@ -231,29 +227,67 @@ namespace PasswordManager
             Console.Clear();
         }
 
-        // Passwörter anzeigen
+        static string CenteredInput(string prompt)
+        {
+            PrintCentered.PrintTextCentered(prompt);
+            string input = "";
+            ConsoleKeyInfo key;
+            int consoleWidth = Console.WindowWidth;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Backspace && input.Length > 0)
+                {
+                    input = input[..^1];
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    input += key.KeyChar;
+                }
+
+                int startX = (consoleWidth / 2) - (input.Length / 2);
+                int startY = Console.CursorTop;
+
+                Console.SetCursorPosition(0, startY);
+                Console.Write(new string(' ', consoleWidth));
+                Console.SetCursorPosition(startX, startY);
+                Console.Write(input);
+
+            } while (key.Key != ConsoleKey.Enter);
+
+            return input;
+        }
+
+
         static void ShowPasswords(PasswordManagerOptions manager, byte[] aesKey)
         {
             Console.Clear();
             PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.PASSWORDS.-~*´¨¯¨`*·~-.¸··._.·´¯)");
             PrintCentered.PrintTextCentered(" ");
+            PrintCentered.PrintTextCentered("------------------------------------------------------------------------------------------------------------------------------------------------------");
+            PrintCentered.PrintTextCentered(" ");
 
             manager.listPasswords(aesKey);
+            PrintCentered.PrintTextCentered(" ");
+            PrintCentered.PrintTextCentered("------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             PrintCentered.PrintTextCentered(" ");
             PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
+            PrintCentered.PrintTextCentered(" ");
+            PrintCentered.PrintTextCentered("------------------------------------------------------------------------------------------------------------------------------------------------------");
+
             Console.ReadKey();
             Console.Clear();
         }
 
-        // Passwort löschen
         static void DeletePassword(PasswordManagerOptions manager)
         {
             Console.Clear();
             PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.DELETE ENTRY.-~*´¨¯¨`*·~-.¸··._.·´¯)");
             PrintCentered.PrintTextCentered(" ");
 
-            // Passwörter anzeigen und zum Löschen auswählen
             manager.deletePassword();
 
             PrintCentered.PrintTextCentered(" ");
@@ -261,35 +295,80 @@ namespace PasswordManager
             Console.ReadKey();
             Console.Clear();
         }
-
         static void GeneratePassword(PasswordManagerOptions manager)
         {
             Console.Clear();
-            PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.GENERATE PASSWORD.-~*´¨¯¨`*·~-.¸··._.·´¯)");
-            PrintCentered.PrintTextCentered("Enter the desired password length:");
+            int emptyFields = 12;
 
-            if(int.TryParse(Console.ReadLine(), out int length) && length > 0)
+            for (int i = 0; i <= emptyFields; i++)
+            {
+                PrintCentered.PrintTextCentered(" ");
+            }
+
+            PrintCentered.PrintTextCentered("(¯·._.··¸.-~*´¨¯¨*·~-.GENERATE PASSWORD.-~*´¨¯¨*·~-.¸··._.·´¯)");
+            PrintCentered.PrintTextCentered("Enter the desired password length (1-130):");
+            PrintCentered.PrintTextCentered(" ");
+
+            string digitInput = "";
+            ConsoleKeyInfo key;
+            int consoleWidth = Console.WindowWidth;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Backspace && digitInput.Length > 0)
+                {
+                    digitInput = digitInput[..^1];
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    digitInput += key.KeyChar;
+                }
+
+                int startX = (consoleWidth / 2) - (digitInput.Length / 2);
+                int startY = Console.CursorTop;
+
+                Console.SetCursorPosition(0, startY);
+                Console.Write(new string(' ', consoleWidth));
+                Console.SetCursorPosition(startX, startY);
+                Console.Write(digitInput);
+
+            } while (key.Key != ConsoleKey.Enter);
+
+            if (int.TryParse(digitInput, out int length) && length > 0 && length <= 130)
             {
                 string generatedPassword = manager.GeneratePassword(length);
+                PrintCentered.PrintTextCentered(" ");
                 PrintCentered.PrintTextCentered($"Generated password: {generatedPassword}");
+            }
+            else if (length > 130)
+            {
+                PrintCentered.PrintTextCentered("Your number input is too high!");
             }
             else
             {
                 PrintCentered.PrintTextCentered("Invalid input!");
             }
+
             PrintCentered.PrintTextCentered(" ");
             PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
             Console.ReadKey();
             Console.Clear();
         }
 
-        static void SearchPassword(PasswordManagerOptions manager)
+
+        static void SearchPassword(PasswordManagerOptions manager, byte[] aesKey)
         {
             Console.Clear();
-            PrintCentered.PrintTextCentered("Enter the website or username you are looking for:");
-            manager.SearchPassword();
+            PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.SEARCH FOR AN ENTRY.-~*´¨¯¨`*·~-.¸··._.·´¯)");
+            PrintCentered.PrintTextCentered(" ");
+            manager.SearchPassword(aesKey);
 
             PrintCentered.PrintTextCentered(" ");
+            PrintCentered.PrintTextCentered("--------------------------------------------------------------------------------------------------------");
+            PrintCentered.PrintTextCentered(" ");
+
             PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
             Console.ReadKey();
             Console.Clear();
@@ -300,7 +379,6 @@ namespace PasswordManager
             passwordHelper.ChangeMasterPassword();
         }
 
-        // Programm beenden
         static void ExitProgram()
         {
             Console.Clear();

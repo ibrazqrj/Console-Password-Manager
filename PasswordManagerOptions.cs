@@ -13,10 +13,20 @@ namespace PasswordManager
         public string websiteUrl { get; private set; }
         public string username { get; private set; }
         public string password { get; private set; }
-        public string filePath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "passwords.txt");
+        public string filePath { get; private set; }
 
+        public PasswordManagerOptions()
+        {
+            string folderPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "PMiz");
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            filePath = Path.Combine(folderPath, "passwords.txt");
+        }
 
         public void AddPassword(string inputWebsite, string inputUsername, string inputPassword)
         {
@@ -41,8 +51,9 @@ namespace PasswordManager
                     var parts = savedpws.Split("|");
                     if (parts.Length == 3)
                     {
+                        string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1], aesKey);
                         string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2], aesKey);
-                        Console.WriteLine($"{partCount} | Website / URL : {parts[0],-30} | Username / E-Mail: {parts[1],-30} | Password: {decryptedPassword,-30}");
+                        Console.WriteLine($"{partCount} | Website / URL : {parts[0],-30} | Username / E-Mail: {decryptedUsername,-30} | Password: {decryptedPassword,-30}");
                         validPasswords.Add(savedpws);
                         partCount++;
                     }
@@ -100,9 +111,13 @@ namespace PasswordManager
             return new string(password);
         }
 
-        public void SearchPassword()
+        public void SearchPassword(byte[] aesKey)
         {
-            string searchTerm = Console.ReadLine();
+            string searchTerm = CenteredInput("Enter the website or username you are looking for:");
+            PrintCentered.PrintTextCentered(" ");
+            PrintCentered.PrintTextCentered(" ");
+            PrintCentered.PrintTextCentered("--------------------------------------------------------------------------------------------------------");
+            PrintCentered.PrintTextCentered(" ");
 
             if (File.Exists(filePath))
             {
@@ -111,10 +126,26 @@ namespace PasswordManager
 
                 foreach (string savedpws in savedPasswords)
                 {
-                    if(savedpws.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    var parts = savedpws.Split("|");
+                    if (parts.Length == 3)
                     {
-                        PrintCentered.PrintTextCentered($"Found: {savedpws}");
-                        found = true;
+                        try
+                        {
+                            string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1].Trim(), aesKey);
+                            string decryptedPassword= AesEncryptionHelper.DecryptPassword(parts[2].Trim(), aesKey);
+
+                            if (parts[0].Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                decryptedUsername.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                decryptedPassword.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                            {
+                                PrintCentered.PrintTextCentered($"Found: Website: {parts[0]} | Username: {decryptedUsername} | Password: {decryptedPassword}");
+                                found = true;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error decrypting entry: {ex.Message}");
+                        }
                     }
                 }
                 if (!found)
@@ -126,6 +157,39 @@ namespace PasswordManager
             {
                 Console.WriteLine("No passwords stored yet.");
             }
+        }
+
+        static string CenteredInput(string prompt)
+        {
+            PrintCentered.PrintTextCentered(prompt);
+            string input = "";
+            ConsoleKeyInfo key;
+            int consoleWidth = Console.WindowWidth;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Backspace && input.Length > 0)
+                {
+                    input = input[..^1];
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    input += key.KeyChar;
+                }
+
+                int startX = (consoleWidth / 2) - (input.Length / 2);
+                int startY = Console.CursorTop;
+
+                Console.SetCursorPosition(0, startY);
+                Console.Write(new string(' ', consoleWidth));
+                Console.SetCursorPosition(startX, startY);
+                Console.Write(input);
+
+            } while (key.Key != ConsoleKey.Enter);
+
+            return input;
         }
     }
 }
