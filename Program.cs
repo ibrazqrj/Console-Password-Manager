@@ -24,7 +24,7 @@ namespace PasswordManager
             while (true)
             {
                 Console.Clear();
-                int emptyFields = 9;
+                int emptyFields = 8;
 
                 for (int i = 0; i <= emptyFields; i++)
                 {
@@ -33,6 +33,15 @@ namespace PasswordManager
                 PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.PASSWORDMANAGER.-~*´¨¯¨`*·~-.¸··._.·´¯)");
                 PrintMainMenu();
                 PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-..-~*´¨¯¯¨`*·~-..-~*´¨¯¨`*·~-.¸··._.·´¯)");
+                PrintCentered.PrintTextCentered(" ");
+
+                string prompt = "Enter your choice: ";
+                int screenWidth = Console.WindowWidth;
+                int textWidth = prompt.Length;
+                int leftPadding = (screenWidth - textWidth) / 2;
+
+                Console.SetCursorPosition(leftPadding, Console.CursorTop);
+                Console.Write(prompt);
 
                 string choice = Console.ReadLine();
 
@@ -55,6 +64,9 @@ namespace PasswordManager
                         SearchPassword(manager);
                         break;
                     case "6":
+                        RenewMasterPassword(passwordHelper);
+                        break;
+                    case "7":
                         ExitProgram();
                         break;
                     default:
@@ -134,11 +146,11 @@ namespace PasswordManager
 
             do
             {
-                key = Console.ReadKey(true); // Read key without displaying it
+                key = Console.ReadKey(true);
 
                 if (key.Key == ConsoleKey.Backspace && pass.Length > 0)
                 {
-                    pass = pass[..^1]; // Remove last character
+                    pass = pass[..^1];
                 }
                 else if (!char.IsControl(key.KeyChar))
                 {
@@ -149,13 +161,12 @@ namespace PasswordManager
                 int startX = (consoleWidth / 2) - (pass.Length / 2);
                 int startY = Console.CursorTop;
 
-                // Clear previous line and reprint stars centered
                 Console.SetCursorPosition(0, startY);
-                Console.Write(new string(' ', consoleWidth)); // Erase old characters
+                Console.Write(new string(' ', consoleWidth));
                 Console.SetCursorPosition(startX, startY);
-                Console.Write(new string('*', pass.Length)); // Print masked input
+                Console.Write(new string('*', pass.Length));
 
-            } while (key.Key != ConsoleKey.Enter); // Stop when Enter is pressed
+            } while (key.Key != ConsoleKey.Enter);
 
             return pass;
         }
@@ -165,12 +176,13 @@ namespace PasswordManager
         static void PrintMainMenu()
         {
             PrintCentered.PrintTextCentered(" ");
-            PrintCentered.PrintTextCentered("1. Add password");
-            PrintCentered.PrintTextCentered("2. Show passwords");
-            PrintCentered.PrintTextCentered("3. Delete password");
-            PrintCentered.PrintTextCentered("4. Generate password");
-            PrintCentered.PrintTextCentered("5. Search password");
-            PrintCentered.PrintTextCentered("6. Quit");
+            PrintCentered.PrintTextCentered("1 | Add password          ");
+            PrintCentered.PrintTextCentered("2 | Show passwords        ");
+            PrintCentered.PrintTextCentered("3 | Delete password       ");
+            PrintCentered.PrintTextCentered("4 | Random password       ");
+            PrintCentered.PrintTextCentered("5 | Search password       ");
+            PrintCentered.PrintTextCentered("6 | Change Master Password");
+            PrintCentered.PrintTextCentered("7 | Quit                  ");
             PrintCentered.PrintTextCentered(" ");
         }
 
@@ -282,6 +294,12 @@ namespace PasswordManager
             Console.ReadKey();
             Console.Clear();
         }
+
+        static void RenewMasterPassword(MasterPasswordHelper passwordHelper)
+        {
+            passwordHelper.ChangeMasterPassword();
+        }
+
         // Programm beenden
         static void ExitProgram()
         {
