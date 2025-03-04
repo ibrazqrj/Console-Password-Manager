@@ -8,22 +8,19 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 
-namespace PasswordManager
+namespace PasswordManager.Helper
 {
     class AesEncryptionHelper
     {
         public static byte[] DeriveKeyFromPassword(string masterPassword)
         {
             byte[] salt = Encoding.UTF8.GetBytes("AES_FIXED_SALT");
-            int iterations = 1000000;
-            int keySize = 32;
-
             byte[] key = KeyDerivation.Pbkdf2(
                 password: masterPassword!,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA256,
                 iterationCount: 100000,
-                numBytesRequested: keySize
+                numBytesRequested: 32
                 );
 
             return key;
@@ -59,10 +56,12 @@ namespace PasswordManager
                 aesAlg.Key = aesKey;
 
                 byte[] fullCipher = Convert.FromBase64String(encryptedText);
+
                 if (fullCipher.Length < aesAlg.BlockSize / 8)
                 {
                     throw new ArgumentException("Ciphertext is too short or invalid.");
                 }
+
                 byte[] iv = new byte[aesAlg.BlockSize / 8];
                 byte[] cipherText = new byte[fullCipher.Length - iv.Length];
 

@@ -5,24 +5,26 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using PasswordManager.Format;
+using Microsoft.VisualBasic;
+using PasswordManager.Components;
 
-namespace PasswordManager
+namespace PasswordManager.Helper
 {
     class MasterPasswordHelper
     {
-        public string filePath { get; private set; }
+        private readonly string filePath;
+        private readonly Pbkdf2 pbkdf2 = new();
 
         public MasterPasswordHelper()
         {
-            string folderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "PMiz");
+            string folderPath = ConstantsCustom.FolderPath;
 
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
             }
-            filePath = Path.Combine(folderPath, "master.txt");
+            filePath = ConstantsCustom.MasterFilePath;
         }
 
         public void HashPassword()
@@ -37,15 +39,12 @@ namespace PasswordManager
             {
 
                 Console.Clear();
-                int emptyFields = 12;
-
-                for (int i = 0; i <= emptyFields; i++)
-                {
-                    PrintCentered.PrintTextCentered(" ");
-                }
-                PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.PASSWORD MANAGER.-~*´¨¯¨`*·~-.¸··._.·´¯)");
+                EmptyFieldGenerator.generateFields(12);
+                
+                PrintCentered.PrintTitle("PASSWORD MANAGER");
                 PrintCentered.PrintTextCentered("To use the Password manager, you need to create a master password. Don't worry, your master password will get hashed and can't be unhashed anymore.");
-                PrintCentered.PrintTextCentered("");
+                EmptyFieldGenerator.generateFields(1);
+
                 string prompt = "Enter your master password:";
                 int screenWidth = Console.WindowWidth;
                 int textWidth = prompt.Length;
@@ -64,12 +63,8 @@ namespace PasswordManager
                 byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
                 string saltBase64 = Convert.ToBase64String(salt);
 
-                string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                    password: masterpassword!,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 100000,
-                    numBytesRequested: 256 / 8));
+                Pbkdf2 pbkdf2 = new Pbkdf2();
+                string hashed = pbkdf2.hash(masterpassword, salt); 
 
                 string hashCombinesSalt = $"{saltBase64}:{hashed}";
 
@@ -110,20 +105,16 @@ namespace PasswordManager
                 byte[] convertedSalt = Convert.FromBase64String(storedSalt);
                 string saltBase64 = Convert.ToBase64String(convertedSalt);
 
-                string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                    password: inputPassword!,
-                    salt: convertedSalt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 100000,
-                    numBytesRequested: 256 / 8));
+                Pbkdf2 pbkdf2 = new Pbkdf2();
+                string hashed = pbkdf2.hash(inputPassword, convertedSalt);
 
                 string hashCombinedSalt = $"{saltBase64}:{hashed}";
 
-                if(hashCombinedSalt != storedHashCombinedSalt)
+                if (hashCombinedSalt != storedHashCombinedSalt)
                 {
                     for (int i = 0; i <= emptyFields; i++)
                     {
-                        PrintCentered.PrintTextCentered(" ");
+                        EmptyFieldGenerator.generateFields(1);
                     }
                     PrintCentered.PrintTextCentered("Master password is wrong!");
                     Environment.Exit(0);
@@ -142,9 +133,9 @@ namespace PasswordManager
 
                     Console.Clear();
 
-                    PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-.PASSWORD MANAGER.-~*´¨¯¨`*·~-.¸··._.·´¯)");
+                    PrintCentered.PrintTitle("Password Manager");
                     PrintCentered.PrintTextCentered("Please enter your new master password you want to use for the future.");
-                    PrintCentered.PrintTextCentered("");
+                    EmptyFieldGenerator.generateFields(1);
                     PrintCentered.PrintTextCentered("Enter your new master password:");
 
                     string masterpassword = Console.ReadLine();
@@ -152,17 +143,13 @@ namespace PasswordManager
                     {
                         PrintCentered.PrintTextCentered("Master password cannot be empty! Please try again.");
                         return;
-                    }
+                    } 
 
                     byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
                     string saltBase64 = Convert.ToBase64String(salt);
 
-                    string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                        password: masterpassword!,
-                        salt: salt,
-                        prf: KeyDerivationPrf.HMACSHA256,
-                        iterationCount: 100000,
-                        numBytesRequested: 256 / 8));
+                    Pbkdf2 pbkdf2 = new Pbkdf2();
+                    string hashed = pbkdf2.hash(masterpassword, salt);
 
                     string hashCombinesSalt = $"{saltBase64}:{hashed}";
 

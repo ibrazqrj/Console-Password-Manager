@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PasswordManager.Components;
+using PasswordManager.Format;
+using PasswordManager.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,31 +20,68 @@ namespace PasswordManager
 
         public PasswordManagerOptions()
         {
-            string folderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "PMiz");
-
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-            filePath = Path.Combine(folderPath, "passwords.txt");
+            filePath = ConstantsCustom.PasswordFilePath;
         }
 
-        public void AddPassword(string inputWebsite, string inputUsername, string inputPassword)
+
+        public static void AddPassword(byte[] aesKey)
         {
-            if (!File.Exists(filePath))
+            Console.Clear();
+            PrintCentered.PrintTitle("ADD NEW ENTRY");
+            PrintCentered.PrintTextCentered("Please fill all fields to save your password!");
+            EmptyFieldGenerator.generateFields(1);
+
+            string website = PrintCentered.CenteredInput("Webpage / URL:");
+            if (string.IsNullOrEmpty(website))
             {
-                File.Create(filePath).Close();
+                PrintCentered.PrintTextCentered("This field can't be empty!");
+                return;
+            }
+            EmptyFieldGenerator.generateFields(1);
+
+            string username = PrintCentered.CenteredInput("Username / E-Mail:");
+            if (string.IsNullOrEmpty(username))
+            {
+                PrintCentered.PrintTextCentered("This field can't be empty!");
+                return;
+            }
+            EmptyFieldGenerator.generateFields(1);
+
+            string password = PrintCentered.CenteredInput("Password:");
+            if (string.IsNullOrEmpty(password))
+            {
+                PrintCentered.PrintTextCentered("This field can't be empty!");
+                return;
+            }
+            PrintCentered.PrintTextCentered(" ");
+            string encryptedUsername = AesEncryptionHelper.EncryptPassword(username, aesKey);
+            string encryptedPassword = AesEncryptionHelper.EncryptPassword(password, aesKey);
+
+            if (!File.Exists(ConstantsCustom.PasswordFilePath))
+            {
+                File.Create(ConstantsCustom.PasswordFilePath).Close();
             }
 
-            File.AppendAllText(filePath, inputWebsite + " | " + inputUsername + " | " + inputPassword + Environment.NewLine);
+            File.AppendAllText(ConstantsCustom.PasswordFilePath, website + " | " + encryptedUsername + " | " + encryptedPassword + Environment.NewLine);
+
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintTextCentered("Entry successfully added!");
+            PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
+            Console.ReadKey();
+            Console.Clear();
         }
+
 
         public void listPasswords(byte[] aesKey)
         {
             var validPasswords = new List<string>();
             var partCount = 1;
+
+            Console.Clear();
+            PrintCentered.PrintTitle("PASSWORDS");
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintSeparator();
+            EmptyFieldGenerator.generateFields(1);
 
             if (File.Exists(filePath))
             {
@@ -59,12 +99,28 @@ namespace PasswordManager
                     }
                 }
             }
+
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintSeparator();
+
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintSeparator();
+
+            Console.ReadKey();
+            Console.Clear();
         }
+
 
         public void deletePassword()
         {
             var validPasswords = new List<string>();
             var partCount = 1;
+
+            Console.Clear();
+            PrintCentered.PrintTitle("DELETE ENTRY");
+            PrintCentered.PrintTextCentered(" ");
 
             if (File.Exists(filePath))
             {
@@ -90,9 +146,73 @@ namespace PasswordManager
                     Console.WriteLine("Invalid input! Please try again.");
                 }
             }
+
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
+            Console.ReadKey();
+            Console.Clear();
         }
 
-        public string GeneratePassword(int length)
+
+        public static void GeneratePassword()
+        {
+            Console.Clear();
+            EmptyFieldGenerator.generateFields(12);
+
+            PrintCentered.PrintTitle("GENERATE PASSWORD");
+            PrintCentered.PrintTextCentered("Enter the desired password length (1-130):");
+            EmptyFieldGenerator.generateFields(1);
+
+            string digitInput = "";
+            ConsoleKeyInfo key;
+            int consoleWidth = Console.WindowWidth;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Backspace && digitInput.Length > 0)
+                {
+                    digitInput = digitInput[..^1];
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    digitInput += key.KeyChar;
+                }
+
+                int startX = consoleWidth / 2 - digitInput.Length / 2;
+                int startY = Console.CursorTop;
+
+                Console.SetCursorPosition(0, startY);
+                Console.Write(new string(' ', consoleWidth));
+                Console.SetCursorPosition(startX, startY);
+                Console.Write(digitInput);
+
+            } while (key.Key != ConsoleKey.Enter);
+
+            if (int.TryParse(digitInput, out int length) && length > 0 && length <= 130)
+            {
+                string generatedPassword = PasswordLogic(length);
+                EmptyFieldGenerator.generateFields(1);
+                PrintCentered.PrintTextCentered($"Generated password: {generatedPassword}");
+            }
+            else if (length > 130)
+            {
+                PrintCentered.PrintTextCentered("Your number input is too high!");
+            }
+            else
+            {
+                PrintCentered.PrintTextCentered("Invalid input!");
+            }
+
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+
+        public static string PasswordLogic(int length)
         {
             const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string lower = "abcdefghijklmnopqrstuvwxyz";
@@ -111,13 +231,17 @@ namespace PasswordManager
             return new string(password);
         }
 
+
         public void SearchPassword(byte[] aesKey)
         {
-            string searchTerm = CenteredInput("Enter the website or username you are looking for:");
-            PrintCentered.PrintTextCentered(" ");
-            PrintCentered.PrintTextCentered(" ");
-            PrintCentered.PrintTextCentered("--------------------------------------------------------------------------------------------------------");
-            PrintCentered.PrintTextCentered(" ");
+            Console.Clear();
+            PrintCentered.PrintTitle("SEARCH FOR AN ENTRY");
+            EmptyFieldGenerator.generateFields(1);
+
+            string searchTerm = PrintCentered.CenteredInput("Enter the website or username you are looking for:");
+            EmptyFieldGenerator.generateFields(2);
+            PrintCentered.PrintSeparator();
+            EmptyFieldGenerator.generateFields(1);
 
             if (File.Exists(filePath))
             {
@@ -157,39 +281,14 @@ namespace PasswordManager
             {
                 Console.WriteLine("No passwords stored yet.");
             }
-        }
 
-        static string CenteredInput(string prompt)
-        {
-            PrintCentered.PrintTextCentered(prompt);
-            string input = "";
-            ConsoleKeyInfo key;
-            int consoleWidth = Console.WindowWidth;
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintSeparator();
+            EmptyFieldGenerator.generateFields(1);
 
-            do
-            {
-                key = Console.ReadKey(true);
-
-                if (key.Key == ConsoleKey.Backspace && input.Length > 0)
-                {
-                    input = input[..^1];
-                }
-                else if (!char.IsControl(key.KeyChar))
-                {
-                    input += key.KeyChar;
-                }
-
-                int startX = (consoleWidth / 2) - (input.Length / 2);
-                int startY = Console.CursorTop;
-
-                Console.SetCursorPosition(0, startY);
-                Console.Write(new string(' ', consoleWidth));
-                Console.SetCursorPosition(startX, startY);
-                Console.Write(input);
-
-            } while (key.Key != ConsoleKey.Enter);
-
-            return input;
+            PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
+            Console.ReadKey();
+            Console.Clear();
         }
     }
 }

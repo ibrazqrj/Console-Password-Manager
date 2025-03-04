@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace PasswordManager
+namespace PasswordManager.Components
 {
-    public static class Constants
+    public static class ConstantsCustom
     {
         public static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PMiz");
         public static readonly string PasswordFilePath = Path.Combine(FolderPath, "passwords.txt");
