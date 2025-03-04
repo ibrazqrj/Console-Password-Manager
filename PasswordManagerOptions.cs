@@ -110,7 +110,7 @@ namespace PasswordManager
         }
 
 
-        public void deletePassword()
+        public void deletePassword(byte[] aesKey)
         {
             var validPasswords = new List<string>();
             var partCount = 1;
@@ -127,12 +127,15 @@ namespace PasswordManager
                     var parts = savedpws.Split("|");
                     if (parts.Length == 3)
                     {
-                        Console.WriteLine($"{partCount} | Website / URL : {parts[0],-30} | Username / E-Mail: {parts[1],-30} | Password: {parts[2],-30}");
+                        string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1], aesKey);
+                        string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2], aesKey);
+                        Console.WriteLine($"{partCount} | Website / URL : {parts[0],-30} | Username / E-Mail: {decryptedUsername,-30} | Password: {decryptedPassword,-30}");
                         validPasswords.Add(savedpws);
                         partCount++;
                     }
                 }
-                Console.WriteLine("Choose the entry you want to delete:");
+                EmptyFieldGenerator.generateFields(1);
+                PrintCentered.PrintTextCentered("Choose the entry you want to delete:");
                 if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= savedPasswords.Length)
                 {
                     validPasswords.RemoveAt(index - 1);
@@ -140,7 +143,8 @@ namespace PasswordManager
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input! Please try again.");
+                    EmptyFieldGenerator.generateFields(1);
+                    PrintCentered.PrintTextCentered("Invalid input! Please try again.");
                 }
             }
 

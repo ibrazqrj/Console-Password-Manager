@@ -48,7 +48,7 @@ namespace PasswordManager
                         ShowPasswords(manager, aesKey);
                         break;
                     case "3":
-                        DeletePassword(manager);
+                        DeletePassword(manager, aesKey);
                         break;
                     case "4":
                         GeneratePassword(manager);
@@ -111,9 +111,9 @@ namespace PasswordManager
             manager.listPasswords(aesKey);
         }
 
-        static void DeletePassword(PasswordManagerOptions manager)
+        static void DeletePassword(PasswordManagerOptions manager, byte[] aesKey)
         {
-            manager.deletePassword();
+            manager.deletePassword(aesKey);
         }
 
         static void GeneratePassword(PasswordManagerOptions manager)
