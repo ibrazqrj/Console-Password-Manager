@@ -80,7 +80,6 @@ namespace PasswordManager
             Console.Clear();
             PrintCentered.PrintTitle("PASSWORDS");
             EmptyFieldGenerator.generateFields(1);
-            PrintCentered.PrintSeparator();
             EmptyFieldGenerator.generateFields(1);
 
             if (File.Exists(filePath))
@@ -101,12 +100,10 @@ namespace PasswordManager
             }
 
             EmptyFieldGenerator.generateFields(1);
-            PrintCentered.PrintSeparator();
 
             EmptyFieldGenerator.generateFields(1);
             PrintCentered.PrintTextCentered("Press a random key to return to the menu.");
             EmptyFieldGenerator.generateFields(1);
-            PrintCentered.PrintSeparator();
 
             Console.ReadKey();
             Console.Clear();

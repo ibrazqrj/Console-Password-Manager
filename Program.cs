@@ -7,8 +7,6 @@ namespace PasswordManager
 {
     internal class Program
     {
-        private Timer _timer = null;
-
         static void Main(string[] args)
         {
             // Fenstergröße einstellen

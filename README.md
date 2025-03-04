@@ -35,7 +35,7 @@ dotnet run
 ```
 
 ## Installation Option 2
-1. Die .exe herunterladen und starten!
+1. "Password Manager.zip" herunterladen, und die .exe Datei ausführen.
 
 Folge den Anweisungen in der Konsole, um Passwörter hinzuzufügen, zu verwalten oder zu löschen.
 
