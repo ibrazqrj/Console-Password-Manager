@@ -16,128 +16,92 @@ namespace PasswordManager
             PasswordManagerOptions manager = new PasswordManagerOptions();
             MasterPasswordHelper passwordHelper = new MasterPasswordHelper();
 
-            createMasterPassword(passwordHelper);
-            string masterPassword = loginWithMasterPassword(passwordHelper);
+            passwordHelper.HashPassword();
+            string masterPassword = passwordHelper.Login();
             byte[] aesKey = AesEncryptionHelper.DeriveKeyFromPassword(masterPassword);
 
             while (true)
             {
-                Console.Clear();
-                EmptyFieldGenerator.generateFields(8);
-
-                PrintMainMenu();
-
-
-                string prompt = "Enter your choice: ";
-                int screenWidth = Console.WindowWidth;
-                int textWidth = prompt.Length;
-                int leftPadding = (screenWidth - textWidth) / 2;
-
-                Console.SetCursorPosition(leftPadding, Console.CursorTop);
-                Console.Write(prompt);
-
-                string choice = Console.ReadLine();
-
-                // Menü-Optionen
-                switch (choice)
-                {
-                    case "1":
-                        AddPassword(manager, aesKey);
-                        break;
-                    case "2":
-                        ShowPasswords(manager, aesKey);
-                        break;
-                    case "3":
-                        DeletePassword(manager, aesKey);
-                        break;
-                    case "4":
-                        GeneratePassword(manager);
-                        break;
-                    case "5":
-                        SearchPassword(manager, aesKey);
-                        break;
-                    case "6":
-                        RenewMasterPassword(passwordHelper);
-                        break;
-                    case "7":
-                        ExitProgram();
-                        break;
-                    default:
-                        PrintCentered.PrintTextCentered("Invalid input! Please try again.");
-                        Console.ReadKey();
-                        break;
-                }
+                HandleMenu(manager, passwordHelper, aesKey);
             }
         }
 
-        static void DisplayStartScreen()
+         
+        static void HandleMenu(PasswordManagerOptions manager, MasterPasswordHelper passwordHelper, byte[] aesKey)
         {
-            Menu.showLogin();
+            Console.Clear();
+            EmptyFieldGenerator.generateFields(8);
+            PrintMainMenu();
+
+            string prompt = "Enter your choice: ";
+            int screenWidth = Console.WindowWidth;
+            int textWidth = prompt.Length;
+            int leftPadding = (screenWidth - textWidth) / 2;
+
+            Console.SetCursorPosition(leftPadding, Console.CursorTop);
+            Console.Write(prompt);
+            string choice = Console.ReadLine();
+
+            // Menü-Optionen
+            switch (choice)
+            {
+                case "1":
+                    AddPassword(manager, aesKey);
+                    break;
+                case "2":
+                    ShowPasswords(manager, aesKey);
+                    break;
+                case "3":
+                    DeletePassword(manager, aesKey);
+                    break;
+                case "4":
+                    GeneratePassword(manager);
+                    break;
+                case "5":
+                    SearchPassword(manager, aesKey);
+                    break;
+                case "6":
+                    RenewMasterPassword(passwordHelper);
+                    break;
+                case "7":
+                    ExitProgram();
+                    break;
+                default:
+                    PrintCentered.PrintTextCentered("Invalid input! Please try again.");
+                    Console.ReadKey();
+                    break;
+            }
         }
 
-        static void createMasterPassword(MasterPasswordHelper passwordHelper)
-        {
-            passwordHelper.HashPassword();
-        }
+        static void PrintMainMenu() => Menu.showMainMenu();
 
-        static string loginWithMasterPassword(MasterPasswordHelper passwordHelper)
-        {
-            DisplayStartScreen();
-            PrintCentered.PrintTitle("PASSWORD MANAGER");
-            PrintCentered.PrintTextCentered("Please login.");
-            EmptyFieldGenerator.generateFields(1);
-            PrintCentered.PrintTextCentered("Enter your master password:");
+        static void AddPassword(PasswordManagerOptions manager, byte[] aesKey) => manager.AddPassword(aesKey);
 
-            string pwInput = Password.HidePassword();
+        static void ShowPasswords(PasswordManagerOptions manager, byte[] aesKey) => manager.listPasswords(aesKey);
 
-            passwordHelper.VerifyMasterPassword(pwInput);
+        static void DeletePassword(PasswordManagerOptions manager, byte[] aesKey) => manager.deletePassword(aesKey);
 
-            return pwInput;
-        }
+        static void GeneratePassword(PasswordManagerOptions manager) => manager.GeneratePassword();
 
+        static void SearchPassword(PasswordManagerOptions manager, byte[] aesKey) => manager.SearchPassword(aesKey);
 
-        static void PrintMainMenu()
-        {
-            Menu.showMainMenu();
-        }
-
-        static void AddPassword(PasswordManagerOptions manager, byte[] aesKey)
-        {
-            PasswordManagerOptions.AddPassword(aesKey);
-        }
-
-        static void ShowPasswords(PasswordManagerOptions manager, byte[] aesKey)
-        {
-            manager.listPasswords(aesKey);
-        }
-
-        static void DeletePassword(PasswordManagerOptions manager, byte[] aesKey)
-        {
-            manager.deletePassword(aesKey);
-        }
-
-        static void GeneratePassword(PasswordManagerOptions manager)
-        {
-            PasswordManagerOptions.GeneratePassword();
-        }
-
-        static void SearchPassword(PasswordManagerOptions manager, byte[] aesKey)
-        {
-            manager.SearchPassword(aesKey);
-        }
-
-        static void RenewMasterPassword(MasterPasswordHelper passwordHelper)
-        {
-            passwordHelper.ChangeMasterPassword();
-        }
+        static void RenewMasterPassword(MasterPasswordHelper passwordHelper) => passwordHelper.ChangeMasterPassword();
 
         static void ExitProgram()
         {
             Console.Clear();
+            PrintCentered.PrintTitle("PASSWORD MANAGER");
+            EmptyFieldGenerator.generateFields(2);
+
             PrintCentered.PrintTextCentered("Password manager shutting down...");
-            PrintCentered.PrintTextCentered(" ");
-            PrintCentered.PrintTextCentered("Press a random key to exit.");
+            EmptyFieldGenerator.generateFields(1);
+
+            PrintCentered.PrintTextCentered("Thank you for using the Password Manager.");
+            EmptyFieldGenerator.generateFields(1);
+
+            PrintCentered.PrintTextCentered("Press any key to exit.");
             Console.ReadKey();
+
             Environment.Exit(0);
         }
     }

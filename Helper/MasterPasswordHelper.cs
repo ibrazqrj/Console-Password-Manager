@@ -73,6 +73,21 @@ namespace PasswordManager.Helper
             }
         }
 
+        public string Login()
+        {
+            Menu.showLogin();
+            PrintCentered.PrintTitle("PASSWORD MANAGER");
+            PrintCentered.PrintTextCentered("Please login.");
+            EmptyFieldGenerator.generateFields(1);
+            PrintCentered.PrintTextCentered("Enter your master password:");
+
+            string pwInput = Password.HidePassword();
+
+            VerifyMasterPassword(pwInput); // Bestehende Methode zur Verifizierung aufrufen
+
+            return pwInput;
+        }
+
 
         public void VerifyMasterPassword(string inputPassword)
         {

@@ -24,7 +24,7 @@ namespace PasswordManager
         }
 
 
-        public static void AddPassword(byte[] aesKey)
+        public void AddPassword(byte[] aesKey)
         {
             Console.Clear();
             PrintCentered.PrintTitle("ADD NEW ENTRY");
@@ -136,7 +136,7 @@ namespace PasswordManager
                 }
                 EmptyFieldGenerator.generateFields(1);
                 PrintCentered.PrintTextCentered("Choose the entry you want to delete:");
-                if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= savedPasswords.Length)
+                if (int.TryParse(PrintCentered.PrintInputCentered(), out int index) && index > 0 && index <= savedPasswords.Length)
                 {
                     validPasswords.RemoveAt(index - 1);
                     File.WriteAllLines(filePath, validPasswords);
@@ -155,7 +155,7 @@ namespace PasswordManager
         }
 
 
-        public static void GeneratePassword()
+        public void GeneratePassword()
         {
             Console.Clear();
             EmptyFieldGenerator.generateFields(12);

@@ -39,6 +39,7 @@ namespace PasswordManager.Format
             EmptyFieldGenerator.generateFields(2);
         }
 
+
         public static void showMainMenu()
         {
             PrintCentered.PrintTitle("PASSWORDMANAGER");
