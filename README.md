@@ -23,21 +23,13 @@ Der **Console Password Manager** ist eine einfache Konsolenanwendung in C#, die 
    ```sh
    cd ConsolePasswordManager
    ```
-4. Baue das Projekt:
+4. Starte die Anwendung:
    ```sh
-   dotnet build
+   dotnet run
    ```
-
-## Nutzung
-Starte die Anwendung mit:
-```sh
-dotnet run
-```
 
 ## Installation Option 2
 1. "Password Manager.zip" herunterladen, und die .exe Datei ausführen.
-
-Folge den Anweisungen in der Konsole, um Passwörter hinzuzufügen, zu verwalten oder zu löschen.
 
 ## Sicherheit
 - Die gespeicherten Passwörter sind verschlüsselt.
