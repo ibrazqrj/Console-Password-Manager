@@ -33,7 +33,7 @@ Der **Console Password Manager** ist eine einfache Konsolenanwendung in C#, die 
 
 ## Sicherheit
 - Die gespeicherten Passwörter sind verschlüsselt.
-- Nutze eine **sicheres Masterpasswort**, um Zugriff auf gespeicherte Passwörter zu erhalten.
+- Nutze ein **sicheres Masterpasswort**, um Zugriff auf gespeicherte Passwörter zu erhalten.
 
 
 ## Autor
