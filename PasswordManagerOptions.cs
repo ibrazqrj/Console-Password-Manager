@@ -195,10 +195,12 @@ namespace PasswordManager
             }
             else if (length > 130)
             {
+                EmptyFieldGenerator.generateFields(1);
                 PrintCentered.PrintTextCentered("Your number input is too high!");
             }
             else
             {
+                EmptyFieldGenerator.generateFields(1);
                 PrintCentered.PrintTextCentered("Invalid input!");
             }
 
