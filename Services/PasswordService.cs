@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PasswordManager
+namespace PasswordManager.Services
 {
     class PasswordService
     {

@@ -1,5 +1,6 @@
 ﻿using PasswordManager.Format;
 using PasswordManager.Helper;
+using PasswordManager.Services;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
