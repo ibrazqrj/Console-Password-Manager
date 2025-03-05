@@ -8,7 +8,7 @@ namespace PasswordManager.Format
 {
     class EmptyFieldGenerator
     {
-        public static void generateFields(int amount)
+        public static void GenerateFields(int amount)
         {
             int emptyFields = amount;
 

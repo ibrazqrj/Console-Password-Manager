@@ -8,9 +8,9 @@ namespace PasswordManager.Format
 {
     class Menu
     {
-        public static void showLogin()
+        public static void ShowLogin()
         {
-            EmptyFieldGenerator.generateFields(3);
+            EmptyFieldGenerator.GenerateFields(3);
 
             string[] logo = {
                 " .--------.",
@@ -36,15 +36,15 @@ namespace PasswordManager.Format
             }
 
             PrintCentered.PrintTextCentered(dev);
-            EmptyFieldGenerator.generateFields(2);
+            EmptyFieldGenerator.GenerateFields(2);
         }
 
 
-        public static void showMainMenu()
+        public static void ShowMainMenu()
         {
             PrintCentered.PrintTitle("PASSWORDMANAGER");
 
-            EmptyFieldGenerator.generateFields(1);
+            EmptyFieldGenerator.GenerateFields(1);
             PrintCentered.PrintTextCentered("1 | Add password          ");
             PrintCentered.PrintTextCentered("2 | Show passwords        ");
             PrintCentered.PrintTextCentered("3 | Delete password       ");
@@ -52,9 +52,9 @@ namespace PasswordManager.Format
             PrintCentered.PrintTextCentered("5 | Search password       ");
             PrintCentered.PrintTextCentered("6 | Change master password");
             PrintCentered.PrintTextCentered("7 | Quit                  ");
-            EmptyFieldGenerator.generateFields(1);
+            EmptyFieldGenerator.GenerateFields(1);
             PrintCentered.PrintTextCentered("(¯`·._.··¸.-~*´¨¯¨`*·~-..-~*´¨¯¯¨`*·~-..-~*´¨¯¨`*·~-.¸··._.·´¯)");
-            EmptyFieldGenerator.generateFields(1);
+            EmptyFieldGenerator.GenerateFields(1);
         }
     }
 }

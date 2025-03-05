@@ -9,7 +9,7 @@ namespace PasswordManager.Format
 {
     class Pbkdf2
     {
-        public string hash(string password, byte[] salt)
+        public string Hash(string password, byte[] salt)
         {
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password!,
