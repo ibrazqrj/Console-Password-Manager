@@ -64,19 +64,19 @@ namespace PasswordManager.Services
                     {
                         string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1], aesKey);
                         string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2], aesKey);
-                        PrintCentered.PrintTextCentered($"{partCount, -100}");
-                        PrintCentered.PrintTextCentered($"Website: {parts[0]}");
-                        PrintCentered.PrintTextCentered($"Username: {decryptedUsername}");
-                        PrintCentered.PrintTextCentered($"Password: {decryptedPassword}");
-                        PrintCentered.PrintSeparator();
+                        UIHelper.PrintTextCentered($"{partCount, -100}");
+                        UIHelper.PrintTextCentered($"Website: {parts[0]}");
+                        UIHelper.PrintTextCentered($"Username: {decryptedUsername}");
+                        UIHelper.PrintTextCentered($"Password: {decryptedPassword}");
+                        UIHelper.PrintSeparator();
                         validPasswords.Add(savedpws);
                         partCount++;
                     }
                 }
 
                 EmptyFieldGenerator.GenerateFields(1);
-                PrintCentered.PrintTextCentered("Your choice:");
-                if (int.TryParse(PrintCentered.PrintInputCentered(), out int index) && index > 0 && index <= savedPasswords.Length)
+                UIHelper.PrintTextCentered("Your choice:");
+                if (int.TryParse(UIHelper.PrintInputCentered(), out int index) && index > 0 && index <= savedPasswords.Length)
                 {
                     validPasswords.RemoveAt(index - 1);
                     File.WriteAllLines(filePath, validPasswords);
@@ -84,7 +84,7 @@ namespace PasswordManager.Services
                 else
                 {
                     EmptyFieldGenerator.GenerateFields(1);
-                    PrintCentered.PrintTextCentered("Invalid input! Please try again.");
+                    UIHelper.PrintTextCentered("Invalid input! Please try again.");
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace PasswordManager.Services
                         }
                         catch (Exception ex)
                         {
-                            PrintCentered.PrintTextCentered($"Error decrypting entry: {ex.Message}");
+                            UIHelper.PrintTextCentered($"Error decrypting entry: {ex.Message}");
                         }
                     }
                 }
@@ -150,7 +150,7 @@ namespace PasswordManager.Services
 
             if (!File.Exists(filePath))
             {
-                PrintCentered.PrintTextCentered("No master password set yet. Please set one first.");
+                UIHelper.PrintTextCentered("No master password set yet. Please set one first.");
                 return false;
             }
 

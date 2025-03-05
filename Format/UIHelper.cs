@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Format
 {
-    public static class PrintCentered
+    public static class UIHelper
     {
         public static void PrintTextCentered(string text)
         {
@@ -24,7 +24,7 @@ namespace PasswordManager.Format
 
         public static void PrintSeparator()
         {
-            PrintCentered.PrintTextCentered("--------------------------------------------------------------------------------------------------------");
+            UIHelper.PrintTextCentered("--------------------------------------------------------------------------------------------------------");
         }
 
         public static string PrintInputCentered()

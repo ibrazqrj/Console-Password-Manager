@@ -24,7 +24,7 @@ namespace PasswordManager
 
             byte[] aesKey = AesEncryptionHelper.DeriveKeyFromPassword(masterPassword);
             PasswordService service = new PasswordService();
-            UI ui = new UI(service, aesKey);
+            UIService ui = new UIService(service, aesKey);
 
             ui.StartMenu();
         }

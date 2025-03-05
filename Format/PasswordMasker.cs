@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Format
 {
-    class Password
+    class PasswordMasker
     {
         public static string HidePassword()
         {

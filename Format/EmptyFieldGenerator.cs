@@ -14,7 +14,7 @@ namespace PasswordManager.Format
 
             for (int i = 0; i <= emptyFields; i++)
             {
-                PrintCentered.PrintTextCentered(" ");
+                UIHelper.PrintTextCentered(" ");
             }
         }
     }

@@ -41,8 +41,8 @@ namespace PasswordManager.Helper
                 Console.Clear();
                 EmptyFieldGenerator.GenerateFields(12);
                 
-                PrintCentered.PrintTitle("PASSWORD MANAGER");
-                PrintCentered.PrintTextCentered("To use the Password manager, you need to create a master password. Don't worry, your master password will get hashed and can't be unhashed anymore.");
+                UIHelper.PrintTitle("PASSWORD MANAGER");
+                UIHelper.PrintTextCentered("To use the Password manager, you need to create a master password. Don't worry, your master password will get hashed and can't be unhashed anymore.");
                 EmptyFieldGenerator.GenerateFields(1);
 
                 string prompt = "Enter your master password:";
@@ -56,7 +56,7 @@ namespace PasswordManager.Helper
                 string masterpassword = Console.ReadLine();
                 if(string.IsNullOrWhiteSpace(masterpassword))
                 {
-                    PrintCentered.PrintTextCentered("Master password cannot be empty! Please try again.");
+                    UIHelper.PrintTextCentered("Master password cannot be empty! Please try again.");
                     return;
                 }
 
@@ -75,13 +75,13 @@ namespace PasswordManager.Helper
 
         public string Login()
         {
-            Menu.ShowLogin();
-            PrintCentered.PrintTitle("PASSWORD MANAGER");
-            PrintCentered.PrintTextCentered("Please login.");
+            ConsoleMenu.ShowLogin();
+            UIHelper.PrintTitle("PASSWORD MANAGER");
+            UIHelper.PrintTextCentered("Please login.");
             EmptyFieldGenerator.GenerateFields(1);
-            PrintCentered.PrintTextCentered("Enter your master password:");
+            UIHelper.PrintTextCentered("Enter your master password:");
 
-            string pwInput = Password.HidePassword();
+            string pwInput = PasswordMasker.HidePassword();
 
             VerifyMasterPassword(pwInput); // Bestehende Methode zur Verifizierung aufrufen
 
@@ -97,7 +97,7 @@ namespace PasswordManager.Helper
 
             if (string.IsNullOrWhiteSpace(inputPassword))
             {
-                PrintCentered.PrintTextCentered("Master password cannot be empty! Please try again.");
+                UIHelper.PrintTextCentered("Master password cannot be empty! Please try again.");
                 return;
             }
             else
@@ -131,7 +131,7 @@ namespace PasswordManager.Helper
                     {
                         EmptyFieldGenerator.GenerateFields(1);
                     }
-                    PrintCentered.PrintTextCentered("Master password is wrong!");
+                    UIHelper.PrintTextCentered("Master password is wrong!");
                     Environment.Exit(0);
                     Console.Clear();
                 }
@@ -148,15 +148,15 @@ namespace PasswordManager.Helper
 
                     Console.Clear();
 
-                    PrintCentered.PrintTitle("Password Manager");
-                    PrintCentered.PrintTextCentered("Please enter your new master password you want to use for the future.");
+                    UIHelper.PrintTitle("Password Manager");
+                    UIHelper.PrintTextCentered("Please enter your new master password you want to use for the future.");
                     EmptyFieldGenerator.GenerateFields(1);
-                    PrintCentered.PrintTextCentered("Enter your new master password:");
+                    UIHelper.PrintTextCentered("Enter your new master password:");
 
                     string masterpassword = Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(masterpassword))
                     {
-                        PrintCentered.PrintTextCentered("Master password cannot be empty! Please try again.");
+                        UIHelper.PrintTextCentered("Master password cannot be empty! Please try again.");
                         return;
                     } 
 
