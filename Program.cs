@@ -12,7 +12,7 @@ namespace PasswordManager
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-
+            Console.Title = "Password Manager";
             // Fenstergröße einstellen
             Console.SetWindowSize(150, 30);
 
