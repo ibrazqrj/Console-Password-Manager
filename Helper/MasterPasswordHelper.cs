@@ -81,9 +81,12 @@ namespace PasswordManager.Helper
             EmptyFieldGenerator.GenerateFields(1);
             UIHelper.PrintTextCentered("Enter your master password:");
 
-            string pwInput = PasswordMasker.HidePassword();
+            AutoLockHelper.StartAutoLock(() => Login());
 
-            VerifyMasterPassword(pwInput); // Bestehende Methode zur Verifizierung aufrufen
+            string pwInput = PasswordMasker.HidePassword();
+            AutoLockHelper.ResetAutoLock();
+
+            VerifyMasterPassword(pwInput);
 
             return pwInput;
         }

@@ -13,6 +13,8 @@ namespace PasswordManager.Services
     {
         private PasswordService passwordService;
         private byte[] aesKey;
+        private MasterPasswordHelper masterPasswordHelper;
+
 
         public UIService(PasswordService service, byte[] key)
         {
@@ -22,6 +24,8 @@ namespace PasswordManager.Services
 
         public void StartMenu()
         {
+            AutoLockHelper.StartAutoLock(() => masterPasswordHelper.Login()); 
+
             while (true)
             {
                 Console.Clear();
