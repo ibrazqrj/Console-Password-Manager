@@ -100,13 +100,27 @@ namespace PasswordManager.Services
             }
             EmptyFieldGenerator.GenerateFields(1);
 
-            string password = UIHelper.CenteredInput("Password:");
+            string password = UIHelper.CenteredInput("Password (or type in 'GeneratePassword' to generate one):");
             if (string.IsNullOrEmpty(password))
             {
                 UIHelper.PrintTextCentered("This field can't be empty!");
                 return;
             }
             EmptyFieldGenerator.GenerateFields(1);
+
+            if (password.ToUpper() == "GENERATEPASSWORD")
+            {
+                var length = UIHelper.CenteredInput("Enter the desired password length (1-130):");
+                if (int.TryParse(length, out int pwLength) && pwLength > 0 && pwLength <= 130)
+                {
+                    password = passwordService.GeneratePassword(pwLength);
+                }
+                else
+                {
+                    UIHelper.PrintTextCentered("Invalid input! Defaulting to 16 characters.");
+                    password = passwordService.GeneratePassword(16);
+                }
+            }
 
             UIHelper.PrintTextCentered("Choose a category:");
             for (int i = 0; i < predefinedCategories.Count; i++)
