@@ -69,7 +69,7 @@ namespace PasswordManager.Services
                         ExitProgramUI();
                         break;
                     default:
-                        UIHelper.PrintTextCentered("Invalid input! Please try again.");
+                        UIHelper.PrintColoredTextCentered("Invalid input! Please try again.", ConsoleColor.Red);
                         Console.ReadKey();
                         break;
                 }
@@ -87,7 +87,7 @@ namespace PasswordManager.Services
             string website = UIHelper.CenteredInput("Webpage / URL:");
             if (string.IsNullOrEmpty(website))
             {
-                UIHelper.PrintTextCentered("This field can't be empty!");
+                UIHelper.PrintColoredTextCentered("This field can't be empty!", ConsoleColor.Red);
                 return;
             }
             EmptyFieldGenerator.GenerateFields(1);
@@ -95,7 +95,7 @@ namespace PasswordManager.Services
             string username = UIHelper.CenteredInput("Username / E-Mail:");
             if (string.IsNullOrEmpty(username))
             {
-                UIHelper.PrintTextCentered("This field can't be empty!");
+                UIHelper.PrintColoredTextCentered("This field can't be empty!", ConsoleColor.Red);
                 return;
             }
             EmptyFieldGenerator.GenerateFields(1);
@@ -103,7 +103,7 @@ namespace PasswordManager.Services
             string password = UIHelper.CenteredInput("Password (or type in 'GeneratePassword' to generate one):");
             if (string.IsNullOrEmpty(password))
             {
-                UIHelper.PrintTextCentered("This field can't be empty!");
+                UIHelper.PrintColoredTextCentered("This field can't be empty!", ConsoleColor.Red);
                 return;
             }
             EmptyFieldGenerator.GenerateFields(1);
@@ -117,10 +117,11 @@ namespace PasswordManager.Services
                 }
                 else
                 {
-                    UIHelper.PrintTextCentered("Invalid input! Defaulting to 16 characters.");
+                    UIHelper.PrintColoredTextCentered("Invalid input! Defaulting to 16 characters.", ConsoleColor.Yellow);
                     password = passwordService.GeneratePassword(16);
                 }
             }
+            EmptyFieldGenerator.GenerateFields(1);
 
             UIHelper.PrintTextCentered("Choose a category:");
             for (int i = 0; i < predefinedCategories.Count; i++)
@@ -135,7 +136,7 @@ namespace PasswordManager.Services
 
             if(!int.TryParse(categoryChoice, out categoryIndex) || categoryIndex < 1 || categoryIndex > predefinedCategories.Count)
             {
-                UIHelper.PrintTextCentered("Invalid choice! Defaulting to 'Others'");
+                UIHelper.PrintColoredTextCentered("Invalid choice! Defaulting to 'Others'", ConsoleColor.Yellow);
                 categoryIndex = predefinedCategories.Count;
             }
 
@@ -144,7 +145,7 @@ namespace PasswordManager.Services
             passwordService.AddPassword(website, username, password, category, aesKey);
 
             EmptyFieldGenerator.GenerateFields(1);
-            UIHelper.PrintTextCentered("Entry successfully added!");
+            UIHelper.PrintColoredTextCentered("Entry successfully added!", ConsoleColor.Green);
             UIHelper.PrintTextCentered("Press a random key to return to the menu.");
             Console.ReadKey();
             Console.Clear();
@@ -174,7 +175,7 @@ namespace PasswordManager.Services
             var passwords = passwordService.GetPasswords(aesKey);
             if (passwords.Count == 0)
             {
-                UIHelper.PrintTextCentered("No passwords saved yet!");
+                UIHelper.PrintColoredTextCentered("No passwords saved yet!", ConsoleColor.Yellow);
                 Console.ReadKey();
                 return;
             }
@@ -196,7 +197,7 @@ namespace PasswordManager.Services
 
             if (!int.TryParse(choice, out int selectedIndex) || selectedIndex < 1 || selectedIndex > categories.Count)
             {
-                UIHelper.PrintTextCentered("Invalid choice! Returning to menu.");
+                UIHelper.PrintColoredTextCentered("Invalid choice! Returning to menu.", ConsoleColor.Red);
                 Console.ReadKey();
                 return;
             }
@@ -229,8 +230,9 @@ namespace PasswordManager.Services
                 }
 
                 EmptyFieldGenerator.GenerateFields(2);
-                UIHelper.PrintTextCentered($"Page {currentPage + 1} / {(totalEntries + pageSize - 1) / pageSize}");
-                UIHelper.PrintTextCentered("[←] Previous  |  [→] Next  |  [Q] Quit");
+                UIHelper.PrintColoredTextCentered($"Page {currentPage + 1} / {(totalEntries + pageSize - 1) / pageSize}", ConsoleColor.Blue);
+                EmptyFieldGenerator.GenerateFields(1);
+                UIHelper.PrintColoredTextCentered("[←] Previous  |  [→] Next  |  [Q] Quit", ConsoleColor.Blue);
 
                 var key = Console.ReadKey(true).Key;
                 if (key == ConsoleKey.RightArrow && endIndex < totalEntries)
@@ -294,12 +296,12 @@ namespace PasswordManager.Services
             else if (length > 130)
             {
                 EmptyFieldGenerator.GenerateFields(1);
-                UIHelper.PrintTextCentered("Your number input is too high!");
+                UIHelper.PrintColoredTextCentered("Your number input is too high!", ConsoleColor.Red);
             }
             else
             {
                 EmptyFieldGenerator.GenerateFields(1);
-                UIHelper.PrintTextCentered("Invalid input!");
+                UIHelper.PrintColoredTextCentered("Invalid input!", ConsoleColor.Red);
             }
 
             EmptyFieldGenerator.GenerateFields(1);
@@ -327,15 +329,15 @@ namespace PasswordManager.Services
             {
                 foreach (var entry in results)
                 {
-                    UIHelper.PrintTextCentered($"Website: {entry.website}");
-                    UIHelper.PrintTextCentered($"Username: {entry.username}");
-                    UIHelper.PrintTextCentered($"Password: {entry.password}");
+                    UIHelper.PrintTextCentered($"Website: {entry.Website}");
+                    UIHelper.PrintTextCentered($"Username: {entry.Username}");
+                    UIHelper.PrintTextCentered($"Password: {entry.EncryptedPassword}");
                     UIHelper.PrintSeparator();
                 }
             }
             else
             {
-                UIHelper.PrintTextCentered("No entries found!");
+                UIHelper.PrintColoredTextCentered("No entries found!", ConsoleColor.Yellow);
             }
 
             EmptyFieldGenerator.GenerateFields(1);
@@ -366,7 +368,7 @@ namespace PasswordManager.Services
 
             if (newPassword != confirmPassword)
             {
-                UIHelper.PrintTextCentered("Passwords do not match! Press any key to try again.");
+                UIHelper.PrintColoredTextCentered("Passwords do not match! Press any key to try again.", ConsoleColor.Red);
                 Console.ReadKey();
                 return;
             }
@@ -375,11 +377,11 @@ namespace PasswordManager.Services
 
             if (success)
             {
-                UIHelper.PrintTextCentered("Master password updated successfully!");
+                UIHelper.PrintColoredTextCentered("Master password updated successfully!", ConsoleColor.Green);
             }
             else
             {
-                UIHelper.PrintTextCentered("Incorrect current master password! Press any key to try again.");
+                UIHelper.PrintColoredTextCentered("Incorrect current master password! Press any key to try again.", ConsoleColor.Red);
             }
 
             Console.ReadKey();

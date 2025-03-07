@@ -117,9 +117,9 @@ namespace PasswordManager.Services
             return new string(password);
         }
 
-        public List<(string website, string username, string password)> SearchPassword(string searchTerm, byte[] aesKey)
+        public List<PasswordEntry> SearchPassword(string searchTerm, byte[] aesKey)
         {
-            var matchingEntries = new List<(string, string, string)>();
+            var matchingEntries = new List<PasswordEntry>();
 
             if (File.Exists(filePath))
             {
@@ -129,18 +129,26 @@ namespace PasswordManager.Services
                 foreach (string savedpws in savedPasswords)
                 {
                     var parts = savedpws.Split("|");
-                    if (parts.Length == 3)
+                    if (parts.Length == 4)
                     {
                         try
                         {
                             string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1].Trim(), aesKey);
                             string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2].Trim(), aesKey);
+                            string decryptedCategory = AesEncryptionHelper.DecryptPassword(parts[3].Trim(), aesKey);
 
                             if (parts[0].Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                 decryptedUsername.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                decryptedPassword.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                                decryptedPassword.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || 
+                                parts[3].Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                             {
-                                matchingEntries.Add((parts[0], decryptedUsername, decryptedPassword));
+                                matchingEntries.Add(new PasswordEntry
+                                {
+                                    Website = parts[0].Trim(),
+                                    Username = decryptedUsername,
+                                    EncryptedPassword = decryptedPassword,
+                                    Category = decryptedCategory
+                                });
                             }
                         }
                         catch (Exception ex)

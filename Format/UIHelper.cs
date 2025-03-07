@@ -70,5 +70,13 @@ namespace PasswordManager.Format
 
             return input;
         }
+
+        public static void PrintColoredTextCentered(string text, ConsoleColor color)
+        {
+            int padding = GetCenteredPadding(text.Length);
+            Console.ForegroundColor = color;
+            Console.WriteLine(new string(' ', padding) + text);
+            Console.ResetColor();
+        }
     }
 }
