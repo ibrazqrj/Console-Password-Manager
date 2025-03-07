@@ -25,6 +25,7 @@ namespace PasswordManager.Services
             while (true)
             {
                 Console.Clear();
+                Console.WriteLine("\x1b[3J");
                 EmptyFieldGenerator.GenerateFields(7);
                 UIHelper.PrintTitle("PASSWORDMANAGER");
 
@@ -78,6 +79,7 @@ namespace PasswordManager.Services
         private void AddPasswordUI()
         {
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
             UIHelper.PrintTitle("ADD NEW ENTRY");
             UIHelper.PrintTextCentered("Please fill all fields to save your password!");
             EmptyFieldGenerator.GenerateFields(1);
@@ -104,51 +106,143 @@ namespace PasswordManager.Services
                 UIHelper.PrintTextCentered("This field can't be empty!");
                 return;
             }
-            UIHelper.PrintTextCentered(" ");
+            EmptyFieldGenerator.GenerateFields(1);
 
-            passwordService.AddPassword(website, username, password, aesKey);
+            UIHelper.PrintTextCentered("Choose a category:");
+            for (int i = 0; i < predefinedCategories.Count; i++)
+            {
+                UIHelper.PrintTextCentered($"{i + 1} | {predefinedCategories[i]}");
+            }
+            EmptyFieldGenerator.GenerateFields(1);
+            UIHelper.PrintTextCentered("Enter the Number of your choice:");
+
+            string categoryChoice = UIHelper.PrintInputCentered();
+            int categoryIndex;
+
+            if(!int.TryParse(categoryChoice, out categoryIndex) || categoryIndex < 1 || categoryIndex > predefinedCategories.Count)
+            {
+                UIHelper.PrintTextCentered("Invalid choice! Defaulting to 'Others'");
+                categoryIndex = predefinedCategories.Count;
+            }
+
+            string category = predefinedCategories[categoryIndex - 1];
+
+            passwordService.AddPassword(website, username, password, category, aesKey);
 
             EmptyFieldGenerator.GenerateFields(1);
             UIHelper.PrintTextCentered("Entry successfully added!");
             UIHelper.PrintTextCentered("Press a random key to return to the menu.");
             Console.ReadKey();
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
         }
+
+        private readonly List<string> predefinedCategories = new List<string>
+        {
+            "Email       ",
+            "Gaming      ",
+            "Social Media",
+            "Work        ",
+            "Banking     ",
+            "Shopping    ",
+            "Others      "
+        };
 
         private void ShowPasswordsUI()
         {
             Console.Clear();
-            EmptyFieldGenerator.GenerateFields(7);
+            Console.SetCursorPosition(0, 0);
+            Console.WriteLine("\x1b[3J");
             UIHelper.PrintTitle("SAVED PASSWORDS");
             EmptyFieldGenerator.GenerateFields(1);
             UIHelper.PrintSeparator();
+
             var passwords = passwordService.GetPasswords(aesKey);
             if (passwords.Count == 0)
             {
                 UIHelper.PrintTextCentered("No passwords saved yet!");
+                Console.ReadKey();
+                return;
             }
-            else
+
+            var categories = passwords.Select(p => p.Category).Distinct().OrderBy(c => c).ToList();
+
+            UIHelper.PrintTextCentered("Choose a category: ");
+            EmptyFieldGenerator.GenerateFields(1);
+
+            for (int i = 0; i < categories.Count; i++)
             {
-                foreach (var (website, username, password) in passwords)
+                UIHelper.PrintTextCentered($"{i + 1} | {categories[i]}");
+            }
+
+            EmptyFieldGenerator.GenerateFields(1);
+            UIHelper.PrintTextCentered("Enter the number of your choice: ");
+
+            string choice = UIHelper.PrintInputCentered();
+
+            if (!int.TryParse(choice, out int selectedIndex) || selectedIndex < 1 || selectedIndex > categories.Count)
+            {
+                UIHelper.PrintTextCentered("Invalid choice! Returning to menu.");
+                Console.ReadKey();
+                return;
+            }
+
+            string selectedCategory = categories[selectedIndex - 1];
+
+            var filteredPasswords = passwords.Where(p => p.Category == selectedCategory).ToList();
+            int totalEntries = filteredPasswords.Count;
+            int pageSize = 4;
+            int currentPage = 0;
+
+            while (true)
+            {
+                Console.Clear();
+                Console.SetCursorPosition(0, 0);
+                EmptyFieldGenerator.GenerateFields(3);
+                UIHelper.PrintTitle($"SAVED PASSWORDS - CATEGORY: {selectedCategory}");
+                EmptyFieldGenerator.GenerateFields(1);
+
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, totalEntries);
+
+                for (int i = startIndex; i < endIndex; i++)
                 {
-                    UIHelper.PrintTextCentered("Website: " + website);
-                    UIHelper.PrintTextCentered("Username: " + username);
-                    UIHelper.PrintTextCentered("Password: " + password);
+                    var entry = filteredPasswords[i];
+                    UIHelper.PrintTextCentered($"Website: {entry.Website}");
+                    UIHelper.PrintTextCentered($"Username: {entry.Username}");
+                    UIHelper.PrintTextCentered($"Password: {entry.EncryptedPassword}");
                     UIHelper.PrintSeparator();
+                }
+
+                EmptyFieldGenerator.GenerateFields(2);
+                UIHelper.PrintTextCentered($"Page {currentPage + 1} / {(totalEntries + pageSize - 1) / pageSize}");
+                UIHelper.PrintTextCentered("[←] Previous  |  [→] Next  |  [Q] Quit");
+
+                var key = Console.ReadKey(true).Key;
+                if (key == ConsoleKey.RightArrow && endIndex < totalEntries)
+                {
+                    currentPage++;
+                }
+                else if ( key == ConsoleKey.LeftArrow && currentPage > 0)
+                {
+                    currentPage--;
+                }
+                else if (key == ConsoleKey.Q)
+                {
+                    break;
                 }
             }
 
-            passwordService.GetPasswords(aesKey);
 
             EmptyFieldGenerator.GenerateFields(1);
-            UIHelper.PrintTextCentered("Press a random key to return to the menu.");
-            Console.ReadKey();
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
         }
 
         private void DeletePasswordUI()
         {
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
             UIHelper.PrintTitle("DELETE ENTRY");
             EmptyFieldGenerator.GenerateFields(1);
 
@@ -162,11 +256,13 @@ namespace PasswordManager.Services
             UIHelper.PrintTextCentered("Press a random key to return to the menu.");
             Console.ReadKey();
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
         }
 
         private void GeneratePasswordUI()
         {
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
             EmptyFieldGenerator.GenerateFields(12);
 
             UIHelper.PrintTitle("GENERATE PASSWORD");
@@ -196,12 +292,14 @@ namespace PasswordManager.Services
             UIHelper.PrintTextCentered("Press a random key to return to the menu.");
             Console.ReadKey();
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
         }
 
         private void SearchPasswordUI()
         {
             
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
             EmptyFieldGenerator.GenerateFields(7);
             UIHelper.PrintTitle("SEARCH FOR AN ENTRY");
             EmptyFieldGenerator.GenerateFields(1);
@@ -231,11 +329,13 @@ namespace PasswordManager.Services
             UIHelper.PrintTextCentered("Press a random key to return to the menu.");
             Console.ReadKey();
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
         }
 
         private void RenewMasterPasswordUI()
         {
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
             UIHelper.PrintTitle("CHANGE MASTER PASSWORD");
 
             string oldPassword = UIHelper.CenteredInput("Enter current master password:");
@@ -274,6 +374,7 @@ namespace PasswordManager.Services
         private void ExitProgramUI()
         {
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
 
             EmptyFieldGenerator.GenerateFields(3);
 

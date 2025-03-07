@@ -14,22 +14,23 @@ namespace PasswordManager.Services
     {
         private string filePath = ConstantsCustom.PasswordFilePath;
 
-        public void AddPassword(string website, string username, string password, byte[] aesKey)
+        public void AddPassword(string website, string username, string password, string category, byte[] aesKey)
         {
             string encryptedUsername = AesEncryptionHelper.EncryptPassword(username, aesKey);
             string encryptedPassword = AesEncryptionHelper.EncryptPassword(password, aesKey);
+            string encryptedCategory = AesEncryptionHelper.EncryptPassword(category, aesKey);
 
             if (!File.Exists(ConstantsCustom.PasswordFilePath))
             {
                 File.Create(ConstantsCustom.PasswordFilePath).Close();
             }
 
-            File.AppendAllText(ConstantsCustom.PasswordFilePath, website + " | " + encryptedUsername + " | " + encryptedPassword + Environment.NewLine);
+            File.AppendAllText(ConstantsCustom.PasswordFilePath, website + " | " + encryptedUsername + " | " + encryptedPassword + " | " + encryptedCategory + Environment.NewLine);
         }
 
-        public List<(string website, string username, string password)> GetPasswords(byte[] aesKey)
+        public List<PasswordEntry> GetPasswords(byte[] aesKey)
         {
-            var passwordList = new List<(string, string, string)>();
+            var passwordList = new List<PasswordEntry>();
 
             if (File.Exists(filePath))
             {
@@ -37,11 +38,18 @@ namespace PasswordManager.Services
                 foreach (var line in savedPasswords)
                 {
                     var parts = line.Split("|");
-                    if (parts.Length == 3)
+                    if (parts.Length == 4)
                     {
-                        string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1], aesKey);
-                        string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2], aesKey);
-                        passwordList.Add((parts[0], decryptedUsername, decryptedPassword));
+                        string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1].Trim(), aesKey);
+                        string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2].Trim(), aesKey);
+                        string decryptedCategory = AesEncryptionHelper.DecryptPassword(parts[3].Trim(), aesKey);
+                        passwordList.Add(new PasswordEntry
+                        {
+                            Website = parts[0].Trim(),
+                            Username = decryptedUsername,
+                            EncryptedPassword = decryptedPassword,
+                            Category = decryptedCategory
+                        });
                     }
                 }
             }
@@ -60,7 +68,7 @@ namespace PasswordManager.Services
                 foreach (string savedpws in savedPasswords)
                 {
                     var parts = savedpws.Split("|");
-                    if (parts.Length == 3)
+                    if (parts.Length == 4)
                     {
                         string decryptedUsername = AesEncryptionHelper.DecryptPassword(parts[1], aesKey);
                         string decryptedPassword = AesEncryptionHelper.DecryptPassword(parts[2], aesKey);
