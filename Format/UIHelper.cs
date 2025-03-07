@@ -78,5 +78,32 @@ namespace PasswordManager.Format
             Console.WriteLine(new string(' ', padding) + text);
             Console.ResetColor();
         }
+
+        public static int GetPasswordStrength(string password)
+        {
+            int score = 0;
+
+            if (password.Length > 8) score++;
+            if (password.Length >= 12) score++;
+            if (password.Any(char.IsUpper)) score++;
+            if (password.Any(char.IsDigit)) score++;
+            if (password.Any(ch => "!@#$%^&*".Contains(ch))) score++;
+
+            return score;
+        }
+
+        public static string GetPasswordStars(int score)
+        {
+            return score switch
+            {
+                0 => "★☆☆☆☆ (Very Weak)",
+                1 => "★★☆☆☆ (Weak)",
+                2 => "★★★☆☆ (Medium)",
+                3 => "★★★★☆ (Strong)",
+                4 => "★★★★★ (Very Strong)",
+                5 => "★★★★★ (Excellent)",
+                _ => "Unknown"
+            };
+        }
     }
 }

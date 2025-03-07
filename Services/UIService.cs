@@ -101,6 +101,28 @@ namespace PasswordManager.Services
             EmptyFieldGenerator.GenerateFields(1);
 
             string password = UIHelper.CenteredInput("Password (or type in 'GeneratePassword' to generate one):");
+
+            EmptyFieldGenerator.GenerateFields(1);
+
+            int strength = UIHelper.GetPasswordStrength(password);
+            string stars = UIHelper.GetPasswordStars(strength);
+
+            if(strength < 3)
+            {
+                UIHelper.PrintColoredTextCentered("Password is weak! Consider using a stronger one.", ConsoleColor.Red);
+                UIHelper.PrintColoredTextCentered(stars, ConsoleColor.Red);
+            }
+            else if (strength < 5)
+            {
+                UIHelper.PrintColoredTextCentered("Password is moderate.", ConsoleColor.Yellow);
+                UIHelper.PrintColoredTextCentered(stars, ConsoleColor.Yellow);
+            }
+            else
+            {
+                UIHelper.PrintColoredTextCentered("Password is strong!", ConsoleColor.Green);
+                UIHelper.PrintColoredTextCentered(stars, ConsoleColor.Green);
+            }
+
             if (string.IsNullOrEmpty(password))
             {
                 UIHelper.PrintColoredTextCentered("This field can't be empty!", ConsoleColor.Red);
