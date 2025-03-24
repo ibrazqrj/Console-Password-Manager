@@ -1,40 +1,42 @@
-# Console Password Manager
+# ğŸ” Console Password Manager
 
-## Über das Projekt
-Der **Console Password Manager** ist eine einfache Konsolenanwendung in C#, die es Nutzern ermöglicht, Passwörter sicher zu speichern, zu verwalten und abzurufen. Das Projekt dient dazu, das Verständnis für Methoden, Logik und Dateioperationen in C# zu vertiefen.
+## ğŸ“Œ About the Project
+The **Console Password Manager** is a simple console application in C# that allows users to securely store, manage, and retrieve passwords. The project is designed to enhance the understanding of **methods, logic, and file operations in C#** while providing a practical utility.
 
-## Funktionen
-- **Passwort speichern**: Nutzer können Passwörter sicher abspeichern.
-- **Passwort abrufen**: Gespeicherte Passwörter können abgerufen werden.
-- **Passwort löschen**: Entferne gespeicherte Einträge.
-- **Passwort generieren**: Nutzer können komplizierte Passwörter im Bereich zwischen 1-130 Zeichen generieren lassen.
-- **Passwort suchen**: Mit der Suchfunktion macht die Konsolen App es bei grösseren Mengen an Einträgen einfacher nach einem bestimmten Passwort zu suchen.
-- **Masterpasswort ändern**: Falls man das Masterpasswort ändern möchte kann man das über eine Funktion in der App erledigen.
-- **Verschlüsselte Speicherung**: Passwörter werden verschlüsselt in einer Datei gespeichert.
-- **Benutzerfreundliche CLI**: Einfache Bedienung über die Konsole.
+## âœ¨ Features
+- **ğŸ’¾ Store Passwords**: Users can securely save passwords.
+- **ğŸ” Retrieve Passwords**: Access stored passwords quickly.
+- **ğŸ—‘ï¸ Delete Passwords**: Remove stored entries.
+- **ğŸ”¢ Generate Passwords**: Create complex passwords between 1-130 characters.
+- **ğŸ” Search Passwords**: Easily find specific passwords in large entries.
+- **ğŸ”‘ Change Master Password**: Update the master password if needed.
+- **ğŸ” Encrypted Storage**: Passwords are securely encrypted before being saved.
+- **ğŸ–¥ï¸ User-Friendly CLI**: Simple console-based interface for easy management.
 
-## Installation Option 1
-1. Stelle sicher, dass **.NET SDK 6.0 oder höher** installiert ist.
-2. Klone das Repository:
+## ğŸš€ Installation Option 1 (Source Code)
+1. Ensure you have **.NET SDK 6.0 or higher** installed.
+2. Clone the repository:
    ```sh
    git clone https://github.com/ibrazqrj/ConsolePasswordManager.git
    ```
-3. Wechsle in das Projektverzeichnis:
+3. Navigate to the project directory:
    ```sh
    cd ConsolePasswordManager
    ```
-4. Starte die Anwendung:
+4. Run the application:
    ```sh
    dotnet run
    ```
 
-## Installation Option 2
-1. "Password Manager.zip" herunterladen, und die .exe Datei ausführen.
+## ğŸ“¦ Installation Option 2 (Executable)
+1. **Download** `Password Manager.zip`.
+2. Extract the zip file and **run the .exe** file.
 
-## Sicherheit
-- Die gespeicherten Passwörter sind verschlüsselt.
-- Nutze ein **sicheres Masterpasswort**, um Zugriff auf gespeicherte Passwörter zu erhalten.
+## ğŸ”’ Security
+- Stored passwords are **AES encrypted** for security.
+- The **Master Password** is securely **hashed using SHA-256**.
+- Ensure you use a **strong Master Password** to protect your stored credentials.
 
-
-## Autor
+## ğŸ‘¤ Author
 [ibrazqrj](https://github.com/ibrazqrj)
+
